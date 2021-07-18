@@ -11,7 +11,7 @@ func main() {
 	app.Use(iris.Compression)
 
 	app.Get("/", func(ctx iris.Context) {
-		ctx.WriteString("OMG VOLLx")
+		ctx.WriteString("Hot reload")
 	})
 
 	app.Listen(":8080")
