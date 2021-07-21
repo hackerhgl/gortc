@@ -13,9 +13,8 @@ import (
 
 func main() {
 	app := iris.New()
-
-	mysql_service.Connect()
 	env_service.Init()
+	mysql_service.Connect()
 	app.Use(iris.Compression)
 
 	app.Get("/", func(ctx iris.Context) {
