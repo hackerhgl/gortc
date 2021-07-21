@@ -1,8 +1,25 @@
 package gortc_auth_v1
 
-import "github.com/kataras/iris/v12"
+import (
+	"encoding/json"
+
+	"github.com/kataras/iris/v12"
+)
+
+type Book struct {
+	Title string `json:"title"`
+}
 
 func LogIn(ctx iris.Context) {
-	ctx.WriteString("Login")
+	// var b Book
+	// ctx.ReadBody(&b)
+	// fmt.Println(b)
+	// inter := map[string]interface{}{}
+	inter := iris.Map{}
+	body, _ := ctx.GetBody()
+
+	json.Unmarshal(body, &inter)
+
+	ctx.JSON(inter)
 
 }
