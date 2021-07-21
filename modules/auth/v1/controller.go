@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	models "gortc/models"
 	env "gortc/services/env"
 	mysql "gortc/services/mysql"
@@ -31,13 +30,21 @@ func logIn(ctx iris.Context) {
 	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		ctx.JSON(iris.Map{
-			"error": "Email not found",
+			"error": "Invalid credentials",
 		})
 		return
 	}
 
-	fmt.Println("uu", user.Email, user)
-	ctx.JSON(body)
+	if !verifySaltNHash(user.Password, user.Salt, body.Password) {
+		ctx.JSON(iris.Map{
+			"error": "Invalid credentials",
+		})
+		return
+	}
+
+	ctx.JSON(iris.Map{
+		"message": "User logged in successfully",
+	})
 }
 
 func signUp(ctx iris.Context) {
@@ -46,6 +53,15 @@ func signUp(ctx iris.Context) {
 	if err != nil {
 		ctx.JSON(iris.Map{
 			"error": err.Error(),
+		})
+		return
+	}
+
+	var user models.User
+	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
+	if result.RowsAffected > 0 {
+		ctx.JSON(iris.Map{
+			"error": "Email already exist!",
 		})
 		return
 	}
@@ -79,4 +95,9 @@ func saltNHash(password string) (string, string) {
 	}
 
 	return string(hash), salt
+}
+
+func verifySaltNHash(hash string, salt string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password+salt+env.E().APP.PEPPER))
+	return err == nil
 }
