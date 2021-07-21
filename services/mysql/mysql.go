@@ -20,7 +20,17 @@ func Connect() bool {
 		return false
 	}
 
+	x, _ := db.DB()
+	err = x.Ping()
+	if err != nil {
+		fmt.Println("MYSQL: PING FAILED")
+		return false
+	}
+	fmt.Println(db)
+	fmt.Println("MYSQL: PING SUCCESS")
+
 	fmt.Println("Successfully connected to MYSQL")
+	Migration()
 
 	return true
 }

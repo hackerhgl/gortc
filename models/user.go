@@ -1,0 +1,32 @@
+package gortc_models
+
+import (
+	"database/sql/driver"
+
+	"gorm.io/gorm"
+)
+
+type userRole string
+
+const (
+	roleSuperAdmin userRole = "super-admin"
+	roleAdmin      userRole = "admin"
+	roleuser       userRole = "user"
+)
+
+func (p *userRole) Scan(value interface{}) error {
+	*p = userRole(value.([]byte))
+	return nil
+}
+
+func (p userRole) Value() (driver.Value, error) {
+	return string(p), nil
+}
+
+type User struct {
+	gorm.Model
+	Name     string
+	Email    string
+	Password string
+	Role     userRole `gorm:"type:enum('super-admin', 'admin', 'user','xxx');default:'user'"`
+}
