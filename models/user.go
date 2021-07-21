@@ -9,9 +9,9 @@ import (
 type userRole string
 
 const (
-	roleSuperAdmin userRole = "super-admin"
-	roleAdmin      userRole = "admin"
-	roleuser       userRole = "user"
+	RoleSuperAdmin userRole = "super-admin"
+	RoleAdmin      userRole = "admin"
+	Roleuser       userRole = "user"
 )
 
 func (p *userRole) Scan(value interface{}) error {
@@ -25,8 +25,9 @@ func (p userRole) Value() (driver.Value, error) {
 
 type User struct {
 	gorm.Model
-	Name     string
-	Email    string
-	Password string
-	Role     userRole `gorm:"type:enum('super-admin', 'admin', 'user','xxx');default:'user'"`
+	Name       string   `gorm:"not null"`
+	Email      string   `gorm:"not null"`
+	Password   string   `gorm:"not null"`
+	IsVerified bool     `gorm:"default:false"`
+	Role       userRole `gorm:"type:enum('super-admin', 'admin', 'user','xxx');default:'user'"`
 }

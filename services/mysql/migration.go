@@ -4,6 +4,7 @@ import (
 	models "gortc/models"
 )
 
-func Migration() {
+func migration() {
 	db.AutoMigrate(&models.User{})
+	db.Migrator().AlterColumn(&models.User{}, "Role")
 }
