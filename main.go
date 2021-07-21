@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	gortc_auth_v1 "gortc/modules/auth/v1"
+	mysql_service "gortc/services/mysql"
 
 	"github.com/kataras/iris/v12"
 )
@@ -18,6 +19,8 @@ func main() {
 
 	// AuthControllerV1()
 	gortc_auth_v1.Routes(app)
+
+	mysql_service.Connect()
 
 	app.Listen(":8080")
 	fmt.Println("Server running at port :8080")
