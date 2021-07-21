@@ -5,14 +5,16 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	env "gortc/services/env"
 )
 
 var db *gorm.DB
 
 func Connect() bool {
 	var err error
-
-	dsn := "root:root@tcp(127.0.0.1:3306)/gortc_dev?charset=utf8mb4&parseTime=True&loc=Local"
+	configs := env.E().MYSQL
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", configs.USER, configs.PASSWORD, configs.HOST, configs.PORT, configs.DATABASE)
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {

@@ -21,7 +21,7 @@ func Init() {
 	fmt.Println(env.MYSQL)
 }
 
-func Env() Environment {
+func E() Environment {
 	return env
 }
 

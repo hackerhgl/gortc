@@ -4,17 +4,17 @@ import (
 	"fmt"
 
 	gortc_auth_v1 "gortc/modules/auth/v1"
-	mysql_service "gortc/services/mysql"
+	mysql "gortc/services/mysql"
 
-	env_service "gortc/services/env"
+	env "gortc/services/env"
 
 	"github.com/kataras/iris/v12"
 )
 
 func main() {
 	app := iris.New()
-	env_service.Init()
-	mysql_service.Connect()
+	env.Init()
+	mysql.Connect()
 	app.Use(iris.Compression)
 
 	app.Get("/", func(ctx iris.Context) {
