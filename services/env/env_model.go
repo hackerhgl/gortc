@@ -8,4 +8,7 @@ type Environment struct {
 		PASSWORD string `env:"MYSQL_PASSWORD,default=root"`
 		DATABASE string `env:"MYSQL_DATABASE,default=gortc_dev"`
 	}
+	APP struct {
+		PEPPER string `env:"APP_PEPPER,default=qwerty1234"`
+	}
 }

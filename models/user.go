@@ -28,6 +28,7 @@ type User struct {
 	Name       string   `gorm:"not null"`
 	Email      string   `gorm:"not null"`
 	Password   string   `gorm:"not null"`
+	Salt       string   `gorm:"not null; size:12"`
 	IsVerified bool     `gorm:"default:false"`
 	Role       userRole `gorm:"type:enum('super-admin', 'admin', 'user','xxx');default:'user'"`
 }
