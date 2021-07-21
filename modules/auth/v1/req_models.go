@@ -1,6 +1,12 @@
 package gortc_auth_v1
 
-type LogInReq struct {
+type logInReq struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type signUpReq struct {
+	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
