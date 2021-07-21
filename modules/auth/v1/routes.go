@@ -6,5 +6,5 @@ import (
 
 func Routes(app *iris.Application) {
 	auth := app.Party("/auth/v1")
-	auth.Post("/login", LogIn)
+	auth.Post("/login", logIn)
 }
