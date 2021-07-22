@@ -11,4 +11,8 @@ type Environment struct {
 	APP struct {
 		PEPPER string `env:"APP_PEPPER,default=qwerty1234"`
 	}
+	JWT struct {
+		SHARED string `env:"JWT_SHARED,default=jwt_shared_1234"`
+		SECRET string `env:"JWT_SECRET,default=GCM_AES_256_secret_shared_key_32"`
+	}
 }

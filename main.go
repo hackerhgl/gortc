@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	app := iris.New()
 	env.Init()
+	app := iris.New()
 	mysql.Connect()
 	app.Use(iris.Compression)
 

@@ -6,6 +6,7 @@ import (
 	"errors"
 	models "gortc/models"
 	env "gortc/services/env"
+	jwt "gortc/services/jwt"
 	mysql "gortc/services/mysql"
 
 	"io"
@@ -45,6 +46,7 @@ func logIn(ctx iris.Context) {
 	ctx.JSON(iris.Map{
 		"message": "User logged in successfully",
 		"user":    user,
+		"token":   jwt.Generate(user.ID),
 	})
 }
 
