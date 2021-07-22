@@ -44,6 +44,7 @@ func logIn(ctx iris.Context) {
 
 	ctx.JSON(iris.Map{
 		"message": "User logged in successfully",
+		"user":    user,
 	})
 }
 

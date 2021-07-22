@@ -27,8 +27,8 @@ type User struct {
 	gorm.Model
 	Name       string   `gorm:"not null"`
 	Email      string   `gorm:"not null"`
-	Password   string   `gorm:"not null"`
-	Salt       string   `gorm:"not null; size:12"`
+	Password   string   `json:"-" gorm:"not null"`
+	Salt       string   `gorm:"not null; size:12" json:"-" `
 	IsVerified bool     `gorm:"default:false"`
 	Role       userRole `gorm:"type:enum('super-admin', 'admin', 'user','xxx');default:'user'"`
 }
