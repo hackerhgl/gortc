@@ -6,5 +6,4 @@ import (
 
 func migration() {
 	db.AutoMigrate(&models.User{})
-	db.Migrator().AlterColumn(&models.User{}, "Role")
 }

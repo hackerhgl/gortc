@@ -26,5 +26,9 @@ func Generate(data interface{}) string {
 	}
 
 	return "JWT " + string(token)
+}
 
+func Verify() bool {
+
+	return true
 }
