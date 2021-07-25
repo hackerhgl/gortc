@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	models "gortc/models"
 	env "gortc/services/env"
 	jwt "gortc/services/jwt"
@@ -88,10 +87,11 @@ func signUp(ctx iris.Context) {
 }
 
 func userProfile(ctx iris.Context) {
-	fmt.Println(" userProfile(ctx iris.Context)  {")
+	user := ctx.Values().Get("user").(models.User)
 
 	ctx.JSON(iris.Map{
 		"message": "successfull",
+		"user":    user,
 	})
 
 }

@@ -2,12 +2,15 @@ package gortc_middlewares
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/kataras/iris/v12"
+	"gorm.io/gorm"
 
+	models "gortc/models"
 	jwt "gortc/services/jwt"
+	mysql "gortc/services/mysql"
 )
 
 type JWTDecoded struct {
@@ -33,7 +36,6 @@ func Auth() iris.Handler {
 			return
 		}
 		decoded, err := jwt.Decode(split[1])
-
 		if err != nil {
 			ctx.StatusCode(400)
 			ctx.JSON(iris.Map{
@@ -51,7 +53,18 @@ func Auth() iris.Handler {
 			return
 		}
 
-		fmt.Println(parsed, "pp")
+		var user models.User
+
+		result := mysql.Ins().Where("id = ?", parsed.ID).First(&user)
+
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			ctx.StatusCode(404)
+			ctx.JSON(iris.Map{
+				"message": "User not found",
+			})
+			return
+		}
+		ctx.Values().Set("user", user)
 
 		ctx.Next()
 	}
