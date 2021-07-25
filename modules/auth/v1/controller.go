@@ -43,12 +43,24 @@ func logIn(ctx iris.Context) {
 		return
 	}
 
+	token, err := jwt.Generate(iris.Map{
+		"id": user.ID,
+	})
+
+	if err != nil {
+		ctx.StatusCode(401)
+		ctx.JSON(iris.Map{
+			"error": "Error while singin please try again later",
+		})
+
+		return
+
+	}
+
 	ctx.JSON(iris.Map{
 		"message": "User logged in successfully",
 		"user":    user,
-		"token": jwt.Generate(iris.Map{
-			"id": user.ID,
-		}),
+		"token":   token,
 	})
 }
 
