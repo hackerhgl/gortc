@@ -17,7 +17,7 @@ type JWTDecoded struct {
 	ID uint `json:"id"`
 }
 
-func Auth() iris.Handler {
+func Auth(strict bool) iris.Handler {
 	return func(ctx iris.Context) {
 		rawToken := ctx.GetHeader("authentication")
 		if rawToken == "" {
@@ -64,6 +64,14 @@ func Auth() iris.Handler {
 			})
 			return
 		}
+
+		if strict && !user.IsVerified {
+			ctx.StatusCode(401)
+			ctx.JSON(iris.Map{
+				"message": "Please verify your account",
+			})
+		}
+
 		ctx.Values().Set("user", user)
 
 		ctx.Next()
