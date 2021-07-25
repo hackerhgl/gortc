@@ -6,22 +6,24 @@ import (
 	"time"
 )
 
-type userRole string
+type UserRole string
 
 const (
-	RoleSuperAdmin userRole = "super-admin"
-	RoleAdmin      userRole = "admin"
-	Roleuser       userRole = "user"
+	RoleSuperAdmin UserRole = "super-admin"
+	RoleAdmin      UserRole = "admin"
+	RoleUser       UserRole = "user"
 )
 
-func (p *userRole) Scan(value interface{}) error {
-	*p = userRole(value.([]byte))
+func (p *UserRole) Scan(value interface{}) error {
+	*p = UserRole(value.([]byte))
 	return nil
 }
 
-func (p userRole) Value() (driver.Value, error) {
+func (p UserRole) Value() (driver.Value, error) {
 	return string(p), nil
 }
+
+var RolesArray []UserRole = []UserRole{RoleUser, RoleAdmin, RoleSuperAdmin}
 
 type User struct {
 	ID         uint         `gorm:"primarykey" json:"id"`
@@ -30,7 +32,7 @@ type User struct {
 	Password   string       `gorm:"not null" json:"-"`
 	Salt       string       `gorm:"not null; size:12" json:"-" `
 	IsVerified bool         `gorm:"default:false" json:"isVerified"`
-	Role       userRole     `gorm:"type:enum('super-admin', 'admin', 'user');default:'user'" json:"role"`
+	Role       UserRole     `gorm:"type:enum('super-admin', 'admin', 'user');default:'user'" json:"role"`
 	CreatedAt  time.Time    `json:"-"`
 	UpdatedAt  time.Time    `json:"-"`
 	DeletedAt  sql.NullTime `gorm:"index" json:"-"`
