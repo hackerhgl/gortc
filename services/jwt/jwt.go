@@ -12,11 +12,8 @@ import (
 var sharedKey, secretKey []byte
 
 func Generate(data interface{}) string {
-	if sharedKey == nil && secretKey == nil {
-		sharedKey = []byte(env.E().JWT.SHARED)
-		secretKey = []byte(env.E().JWT.SECRET)
-	}
-	var signer *jwt.Signer = jwt.NewSigner(jwt.HS256, sharedKey, time.Hour*24)
+	initKeys()
+	signer := jwt.NewSigner(jwt.HS256, sharedKey, time.Hour*24)
 	signer.WithEncryption(secretKey, nil)
 
 	token, err := signer.Sign(data)
@@ -28,7 +25,23 @@ func Generate(data interface{}) string {
 	return "JWT " + string(token)
 }
 
-func Verify() bool {
+func Decode(rawToken string) ([]byte, error) {
+	initKeys()
+	verifier := jwt.NewVerifier(jwt.HS256, sharedKey)
+	verifier.WithDecryption(secretKey, nil)
 
-	return true
+	token, err := verifier.VerifyToken([]byte(rawToken))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return token.Payload, nil
+}
+
+func initKeys() {
+	if sharedKey == nil && secretKey == nil {
+		sharedKey = []byte(env.E().JWT.SHARED)
+		secretKey = []byte(env.E().JWT.SECRET)
+	}
 }

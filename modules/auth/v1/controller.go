@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	models "gortc/models"
 	env "gortc/services/env"
 	jwt "gortc/services/jwt"
@@ -46,7 +47,9 @@ func logIn(ctx iris.Context) {
 	ctx.JSON(iris.Map{
 		"message": "User logged in successfully",
 		"user":    user,
-		"token":   jwt.Generate(user.ID),
+		"token": jwt.Generate(iris.Map{
+			"id": user.ID,
+		}),
 	})
 }
 
@@ -82,6 +85,15 @@ func signUp(ctx iris.Context) {
 	ctx.JSON(iris.Map{
 		"message": "User registered successfully",
 	})
+}
+
+func userProfile(ctx iris.Context) {
+	fmt.Println(" userProfile(ctx iris.Context)  {")
+
+	ctx.JSON(iris.Map{
+		"message": "successfull",
+	})
+
 }
 
 func saltNHash(password string) (string, string) {
