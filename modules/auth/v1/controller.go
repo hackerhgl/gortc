@@ -31,7 +31,7 @@ func logIn(ctx iris.Context) {
 	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		ctx.JSON(iris.Map{
-			"error": "Invalid credentials",
+			"message": "Invalid credentials",
 		})
 		return
 	}
