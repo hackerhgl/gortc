@@ -12,5 +12,6 @@ func Routes(app *iris.Application) {
 	admin.Use(middlewares.Auth(true), middlewares.Permission(models.RoleAdmin))
 	{
 		admin.Post("/list", list)
+		admin.Post("/generate", generate)
 	}
 }
