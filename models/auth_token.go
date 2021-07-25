@@ -13,4 +13,5 @@ type AuthToken struct {
 	CreatedAt time.Time    `json:"-"`
 	UpdatedAt time.Time    `json:"-"`
 	DeletedAt sql.NullTime `gorm:"index" json:"-"`
+	User      User
 }
