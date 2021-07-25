@@ -70,6 +70,7 @@ func Auth(strict bool) iris.Handler {
 			ctx.JSON(iris.Map{
 				"message": "Please verify your account",
 			})
+			return
 		}
 
 		ctx.Values().Set("user", user)
