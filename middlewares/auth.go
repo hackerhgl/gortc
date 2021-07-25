@@ -1,6 +1,7 @@
 package gortc_middlewares
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -9,9 +10,12 @@ import (
 	jwt "gortc/services/jwt"
 )
 
+type JWTDecoded struct {
+	ID uint `json:"id"`
+}
+
 func Auth() iris.Handler {
 	return func(ctx iris.Context) {
-		fmt.Println("middlewares")
 		rawToken := ctx.GetHeader("authentication")
 		if rawToken == "" {
 			ctx.StatusCode(401)
@@ -28,8 +32,17 @@ func Auth() iris.Handler {
 			})
 			return
 		}
-		verification, err := jwt.Decode(split[1])
+		decoded, err := jwt.Decode(split[1])
 
+		if err != nil {
+			ctx.StatusCode(400)
+			ctx.JSON(iris.Map{
+				"mesage": "Error validating the token",
+			})
+			return
+		}
+		var parsed JWTDecoded
+		err = json.Unmarshal(decoded, &parsed)
 		if err != nil {
 			ctx.StatusCode(400)
 			ctx.JSON(iris.Map{
@@ -38,7 +51,7 @@ func Auth() iris.Handler {
 			return
 		}
 
-		fmt.Println(verification, "")
+		fmt.Println(parsed, "pp")
 
 		ctx.Next()
 	}

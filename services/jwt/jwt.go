@@ -13,6 +13,7 @@ var sharedKey, secretKey []byte
 
 func Generate(data interface{}) string {
 	initKeys()
+	// signer := jwt.NewSigner(jwt.HS256, sharedKey, time.Second*30)
 	signer := jwt.NewSigner(jwt.HS256, sharedKey, time.Hour*24)
 	signer.WithEncryption(secretKey, nil)
 
