@@ -1,19 +1,13 @@
 package gortc_auth_v1
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	models "gortc/models"
-	env "gortc/services/env"
 	jwt "gortc/services/jwt"
 	mysql "gortc/services/mysql"
-
-	"io"
-	"log"
+	utils "gortc/utils"
 
 	"github.com/kataras/iris/v12"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -36,7 +30,7 @@ func logIn(ctx iris.Context) {
 		return
 	}
 
-	if !verifySaltNHash(user.Password, user.Salt, body.Password) {
+	if !utils.VerifySaltNHash(user.Password, user.Salt, body.Password) {
 		ctx.JSON(iris.Map{
 			"error": "Invalid credentials",
 		})
@@ -83,7 +77,7 @@ func signUp(ctx iris.Context) {
 		return
 	}
 
-	hash, salt := saltNHash(body.Password)
+	hash, salt := utils.SaltNHash(body.Password)
 
 	newUser := models.User{
 		Email:    body.Email,
@@ -100,31 +94,9 @@ func signUp(ctx iris.Context) {
 
 func userProfile(ctx iris.Context) {
 	user := ctx.Values().Get("user").(models.User)
-
 	ctx.JSON(iris.Map{
 		"message": "successfull",
 		"user":    user,
 	})
 
-}
-
-func saltNHash(password string) (string, string) {
-	bytes := make([]byte, 6)
-	_, err := io.ReadFull(rand.Reader, bytes)
-	if err != nil {
-		log.Fatal(err)
-	}
-	salt := hex.EncodeToString(bytes)
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(password+salt+env.E().APP.PEPPER), bcrypt.DefaultCost)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return string(hash), salt
-}
-
-func verifySaltNHash(hash string, salt string, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password+salt+env.E().APP.PEPPER))
-	return err == nil
 }
