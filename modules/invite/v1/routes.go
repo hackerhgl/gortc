@@ -13,5 +13,6 @@ func Routes(app *iris.Application) {
 	{
 		admin.Post("/list", list)
 		admin.Post("/generate", generate)
+		admin.Post("/generate_bulk", generateBulk)
 	}
 }

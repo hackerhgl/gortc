@@ -51,3 +51,32 @@ func generate(ctx iris.Context) {
 		"data":    entry,
 	})
 }
+
+func generateBulk(ctx iris.Context) {
+	user := ctx.Values().Get("user").(models.User)
+	var body generateBulkReq
+	ctx.ReadBody(&body)
+	if body.Amount > 24 {
+		ctx.StatusCode(400)
+		ctx.JSON(iris.Map{
+			"message": "Max amount exceed",
+		})
+		return
+	}
+	codes := make([]models.InviteCode, body.Amount)
+
+	for i := 0; i < body.Amount; i++ {
+		bytes := make([]byte, 3)
+		io.ReadFull(rand.Reader, bytes)
+		codes[i] = models.InviteCode{
+			Code:      hex.EncodeToString(bytes),
+			CreatedBy: user.ID,
+		}
+	}
+
+	mysql.Ins().CreateInBatches(&codes, body.Amount)
+
+	ctx.JSON(iris.Map{
+		"data": codes,
+	})
+}
