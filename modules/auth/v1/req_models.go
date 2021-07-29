@@ -10,3 +10,7 @@ type signUpReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type verificationReq struct {
+	Code string `json:"code"`
+}
