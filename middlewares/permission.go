@@ -1,8 +1,6 @@
 package gortc_middlewares
 
 import (
-	"fmt"
-
 	"github.com/kataras/iris/v12"
 
 	models "gortc/models"
@@ -11,11 +9,8 @@ import (
 func Permission(allowedRole models.UserRole) iris.Handler {
 	return func(ctx iris.Context) {
 		user := ctx.Values().Get("user").(models.User)
-
 		userRoleIndex := 0
 		allowedRoleIndex := 0
-
-		fmt.Println(allowedRole)
 
 		for index, value := range models.RolesArray {
 			if user.Role == value {

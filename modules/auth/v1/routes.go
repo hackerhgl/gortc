@@ -11,4 +11,5 @@ func Routes(app *iris.Application) {
 	auth.Post("/log_in", logIn)
 	auth.Post("/sign_up", signUp)
 	auth.Post("/user_profile", userProfile).Use(middlewares.Auth(false))
+	auth.Post("/verification", verification).Use(middlewares.Auth(false))
 }

@@ -5,5 +5,5 @@ import (
 )
 
 func migration() {
-	db.AutoMigrate(&models.User{}, &models.AuthToken{})
+	db.AutoMigrate(&models.User{}, &models.AuthToken{}, &models.InviteCode{})
 }
