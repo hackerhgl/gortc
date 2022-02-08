@@ -7,9 +7,9 @@ import (
 )
 
 func Routes(app *iris.Application) {
-	auth := app.Party("/auth/v1")
-	auth.Post("/log_in", logIn)
-	auth.Post("/sign_up", signUp)
-	auth.Post("/user_profile", userProfile).Use(middlewares.Auth(false))
-	auth.Post("/verification", verification).Use(middlewares.Auth(false))
+	v1 := app.Party("/auth/v1")
+	v1.Post("/log_in", logIn)
+	v1.Post("/sign_up", signUp)
+	v1.Post("/user_profile", userProfile).Use(middlewares.Auth(false))
+	v1.Post("/verification", verification).Use(middlewares.Auth(false))
 }

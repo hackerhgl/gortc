@@ -31,6 +31,7 @@ type User struct {
 	Email      string       `gorm:"not null; unique; index" json:"email"`
 	Password   string       `gorm:"not null" json:"-"`
 	Salt       string       `gorm:"not null; size:12" json:"-" `
+	IsActive   bool         `gorm:"default:true" json:"isActive"`
 	IsVerified bool         `gorm:"default:false" json:"isVerified"`
 	Role       UserRole     `gorm:"type:enum('super-admin', 'admin', 'user');default:'user'" json:"role"`
 	CreatedAt  time.Time    `json:"-"`
