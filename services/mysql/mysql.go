@@ -14,6 +14,7 @@ var db *gorm.DB
 func Connect() bool {
 	var err error
 	configs := env.E().MYSQL
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", configs.USER, configs.PASSWORD, configs.HOST, configs.PORT, configs.DATABASE)
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
