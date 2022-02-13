@@ -175,11 +175,29 @@ func verification(ctx iris.Context) {
 
 func forgetPasswordSendOTP(ctx iris.Context) {
 	var body forgetPasswordSendOTPReq
-	erx := ctx.ReadBody(&body)
-	if erx != nil {
+	var err error = ctx.ReadBody(&body)
+	if err != nil {
 		ctx.StatusCode(400)
 		ctx.JSON(iris.Map{
-			"error": erx.Error(),
+			"error": err.Error(),
+		})
+		return
+	}
+
+	var user models.User
+
+	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		ctx.StatusCode(404)
+		ctx.JSON(iris.Map{
+			"error": "Email doesn't exist",
+		})
+		return
+	} else if !user.IsVerified {
+		ctx.StatusCode(403)
+		ctx.JSON(iris.Map{
+			"error": "Email is not verified",
 		})
 		return
 	}
