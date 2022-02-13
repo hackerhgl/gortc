@@ -202,4 +202,11 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 		return
 	}
 
+	var existing models.UserResetPasswordOTP
+
+	result = mysql.Ins().Where("user_id = ?", user.ID)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+
+	}
 }
