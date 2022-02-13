@@ -2,13 +2,11 @@ package gortc_auth_v1
 
 import (
 	"errors"
-	"fmt"
 	models "gortc/models"
 	jwt "gortc/services/jwt"
 	mysql "gortc/services/mysql"
 	utils "gortc/utils"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
 	"gopkg.in/nullbio/null.v4"
 	"gorm.io/gorm"
@@ -177,49 +175,12 @@ func verification(ctx iris.Context) {
 
 func forgetPasswordSendOTP(ctx iris.Context) {
 	var body forgetPasswordSendOTPReq
-	var err error = ctx.ReadBody(&body)
-	if err != nil {
+	erx := ctx.ReadBody(&body)
+	if erx != nil {
 		ctx.StatusCode(400)
 		ctx.JSON(iris.Map{
-			"error": err.Error(),
+			"error": erx.Error(),
 		})
-		return
-	}
-
-	err = validator.New().Struct(body)
-
-	fmt.Println("AAA")
-	fmt.Println(err)
-
-	if err != nil {
-
-		// this check is only needed when your code could produce
-		// an invalid value for validation such as interface with nil
-		// value most including myself do not usually have code like this.
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
-			ctx.JSON(iris.Map{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-
-			fmt.Println(err.Namespace())
-			fmt.Println(err.Field())
-			fmt.Println(err.StructNamespace())
-			fmt.Println(err.StructField())
-			fmt.Println(err.Tag())
-			fmt.Println(err.ActualTag())
-			fmt.Println(err.Kind())
-			fmt.Println(err.Type())
-			fmt.Println(err.Value())
-			fmt.Println(err.Param())
-			fmt.Println()
-		}
-
-		// from here you can create your own error messages in whatever language you wish
 		return
 	}
 

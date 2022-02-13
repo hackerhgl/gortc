@@ -16,5 +16,5 @@ type verificationReq struct {
 }
 
 type forgetPasswordSendOTPReq struct {
-	email string `json:"email",validate:"required,email"`
+	Email string `json:"email" validate:"required,email"`
 }
