@@ -5,7 +5,8 @@ import (
 	models "gortc/models"
 	jwt "gortc/services/jwt"
 	mysql "gortc/services/mysql"
-	utils "gortc/utils"
+	gortc_utils "gortc/utils"
+	"time"
 
 	"github.com/kataras/iris/v12"
 	"gopkg.in/nullbio/null.v4"
@@ -33,7 +34,7 @@ func logIn(ctx iris.Context) {
 		return
 	}
 
-	if !utils.VerifySaltNHash(user.Password, user.Salt, body.Password) {
+	if !gortc_utils.VerifySaltNHash(user.Password, user.Salt, body.Password) {
 		ctx.StatusCode(404)
 		ctx.JSON(iris.Map{
 			"error": "Invalid credentials",
@@ -82,7 +83,7 @@ func signUp(ctx iris.Context) {
 		return
 	}
 
-	hash, salt := utils.SaltNHash(body.Password)
+	hash, salt := gortc_utils.SaltNHash(body.Password)
 
 	newUser := models.User{
 		Email:    body.Email,
@@ -204,9 +205,35 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 
 	var existing models.UserResetPasswordOTP
 
-	result = mysql.Ins().Where("user_id = ?", user.ID)
+	result = mysql.Ins().Where("user_id = ?", user.ID).Last(&existing)
 
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	buffer := time.Now().Add(time.Minute * -1)
+	expire := time.Now().Add(time.Hour * 4)
 
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !existing.IsActive {
+		mysql.Ins().Create(&models.UserResetPasswordOTP{
+			Code:   gortc_utils.GenHex(3),
+			UserID: user.ID,
+		})
+		// SEND SMTP
+		ctx.StatusCode(201)
+		ctx.JSON(iris.Map{
+			"message": "Code sent to your email",
+		})
+		return
+	} else if existing.IsActive && (buffer.Before(existing.CreatedAt) || buffer.Before(existing.UpdatedAt)) {
+		ctx.StatusCode(429)
+		ctx.JSON(iris.Map{
+			"message": "Please wait 1 minute before resending the code again",
+		})
+		return
+	} else if existing.IsActive && existing.CreatedAt.Before(expire) {
+		mysql.Ins().Save(&existing)
+		// SEND SMTP
+		ctx.StatusCode(201)
+		ctx.JSON(iris.Map{
+			"message": "Code sent to your email",
+		})
+		return
 	}
 }

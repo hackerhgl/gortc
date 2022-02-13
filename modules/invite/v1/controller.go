@@ -1,11 +1,9 @@
 package gortc_invite_v1
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	models "gortc/models"
 	mysql "gortc/services/mysql"
-	"io"
+	gortc_utils "gortc/utils"
 
 	"github.com/kataras/iris/v12"
 )
@@ -18,21 +16,19 @@ func list(ctx iris.Context) {
 
 func generate(ctx iris.Context) {
 	user := ctx.Values().Get("user").(models.User)
-	bytes := make([]byte, 3)
-	_, err := io.ReadFull(rand.Reader, bytes)
 
-	if err != nil {
-		ctx.StatusCode(500)
-		ctx.JSON(iris.Map{
-			"message": err.Error(),
-		})
-		return
-	}
+	// if err != nil {
+	// 	ctx.StatusCode(500)
+	// 	ctx.JSON(iris.Map{
+	// 		"message": err.Error(),
+	// 	})
+	// 	return
+	// }
 
-	code := hex.EncodeToString(bytes)
+	// code := hex.EncodeToString(bytes)
 
 	entry := models.InviteCode{
-		Code:      code,
+		Code:      gortc_utils.GenHex(3),
 		CreatedBy: user.ID,
 	}
 
@@ -66,10 +62,8 @@ func generateBulk(ctx iris.Context) {
 	codes := make([]models.InviteCode, body.Amount)
 
 	for i := 0; i < body.Amount; i++ {
-		bytes := make([]byte, 3)
-		io.ReadFull(rand.Reader, bytes)
 		codes[i] = models.InviteCode{
-			Code:      hex.EncodeToString(bytes),
+			Code:      gortc_utils.GenHex(3),
 			CreatedBy: user.ID,
 		}
 	}
