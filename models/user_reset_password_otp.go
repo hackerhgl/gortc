@@ -10,6 +10,7 @@ type UserResetPasswordOTP struct {
 	Code      string    `gorm:"not null;index:user_code,unique; size:6" json:"code"`
 	IsActive  bool      `gorm:"default:true" json:"isActive"`
 	CreatedAt time.Time `json:"-"`
+	ExpireAt  time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 	User      User
 }

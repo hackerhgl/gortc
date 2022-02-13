@@ -14,3 +14,7 @@ type signUpReq struct {
 type verificationReq struct {
 	Code string `json:"code"`
 }
+
+type forgetPasswordSendOTPReq struct {
+	email string `json:"email",validate:"required,email"`
+}
