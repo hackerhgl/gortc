@@ -189,10 +189,10 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 
 	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
 
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !user.IsActive {
 		ctx.StatusCode(404)
 		ctx.JSON(iris.Map{
-			"error": "Email doesn't exist",
+			"error ": "Email doesn't exist",
 		})
 		return
 	} else if !user.IsVerified {
@@ -210,10 +210,11 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 	buffer := time.Now().Add(time.Minute * -1)
 	expire := time.Now().Add(time.Hour * 4)
 
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !existing.IsActive {
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !existing.IsActive || (existing.IsActive && time.Now().After(existing.ExpireAt)) {
 		mysql.Ins().Create(&models.UserResetPasswordOTP{
-			Code:   gortc_utils.GenHex(3),
-			UserID: user.ID,
+			ExpireAt: expire,
+			Code:     gortc_utils.GenHex(3),
+			UserID:   user.ID,
 		})
 		// SEND SMTP
 		ctx.StatusCode(201)

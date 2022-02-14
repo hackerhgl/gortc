@@ -11,6 +11,6 @@ type UserResetPasswordOTP struct {
 	IsActive  bool      `gorm:"default:true" json:"isActive"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
-	// ExpireAt  time.Time `json:"-"`
-	User User
+	ExpireAt  time.Time `json:"-"`
+	User      User
 }

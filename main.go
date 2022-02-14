@@ -18,6 +18,6 @@ func main() {
 
 	routes(app)
 
-	app.Listen(":8080")
+	app.Listen(":8333")
 	fmt.Println("Server running at port :8080")
 }
