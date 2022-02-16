@@ -186,7 +186,6 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 	}
 
 	var user models.User
-
 	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !user.IsActive {
@@ -204,9 +203,7 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 	}
 
 	var existing models.UserResetPasswordOTP
-
 	result = mysql.Ins().Where("user_id = ?", user.ID).Last(&existing)
-
 	buffer := time.Now().Add(time.Minute * -1)
 	expire := time.Now().Add(time.Hour * 4)
 
@@ -237,4 +234,54 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 		})
 		return
 	}
+}
+
+func forgetPasswordVerifyOTP(ctx iris.Context) {
+	var body forgetPasswordVerifyOTPReq
+	err := ctx.ReadBody(&body)
+	if err != nil {
+		ctx.StatusCode(400)
+		ctx.JSON(iris.Map{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	var user models.User
+	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !user.IsActive {
+		ctx.StatusCode(404)
+		ctx.JSON(iris.Map{
+			"error ": "Email doesn't exist",
+		})
+		return
+	} else if !user.IsVerified {
+		ctx.StatusCode(403)
+		ctx.JSON(iris.Map{
+			"error": "Email not verified",
+		})
+		return
+	}
+
+	var code models.UserResetPasswordOTP
+	result = mysql.Ins().Where("user_id = ?", user.ID).Where("code = ?", body.Code).Last(&code)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		ctx.StatusCode(404)
+		ctx.JSON(iris.Map{
+			"message": "Code doesn't exist",
+		})
+		return
+	} else if code.ExpireAt.Before(time.Now()) {
+		ctx.StatusCode(404)
+		ctx.JSON(iris.Map{
+			"message": "Code expired",
+		})
+		return
+	}
+
+	ctx.JSON(iris.Map{
+		"message": "Code verified",
+	})
 }
