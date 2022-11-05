@@ -23,3 +23,10 @@ type forgetPasswordVerifyOTPReq struct {
 	Email string `json:"email" validate:"required,email"`
 	Code  string `json:"code" validate:"required"`
 }
+
+type forgetPasswordVerifyResetReq struct {
+	Email         string `json:"email" validate:"required,email"`
+	Code          string `json:"code" validate:"required"`
+	Password      string `json:"password" validate:"required"`
+	ResetPassword string `json:"resetPassword" validate:"required"`
+}

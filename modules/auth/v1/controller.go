@@ -236,8 +236,8 @@ func forgetPasswordSendOTP(ctx iris.Context) {
 	}
 }
 
-func forgetPasswordVerifyOTP(ctx iris.Context) {
-	var body forgetPasswordVerifyOTPReq
+func forgetPasswordVerifyOTPOrReset(ctx iris.Context, reset bool) {
+	var verifyBody forgetPasswordVerifyOTPReq
 	err := ctx.ReadBody(&body)
 	if err != nil {
 		ctx.StatusCode(400)
@@ -264,8 +264,8 @@ func forgetPasswordVerifyOTP(ctx iris.Context) {
 		return
 	}
 
-	var code models.UserResetPasswordOTP
-	result = mysql.Ins().Where("user_id = ?", user.ID).Where("code = ?", body.Code).Last(&code)
+	var otp models.UserResetPasswordOTP
+	result = mysql.Ins().Where("user_id = ?", user.ID).Where("code = ?", body.Code).Last(&otp)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		ctx.StatusCode(404)
@@ -273,7 +273,7 @@ func forgetPasswordVerifyOTP(ctx iris.Context) {
 			"message": "Code doesn't exist",
 		})
 		return
-	} else if code.ExpireAt.Before(time.Now()) {
+	} else if otp.ExpireAt.Before(time.Now()) {
 		ctx.StatusCode(404)
 		ctx.JSON(iris.Map{
 			"message": "Code expired",
@@ -285,3 +285,53 @@ func forgetPasswordVerifyOTP(ctx iris.Context) {
 		"message": "Code verified",
 	})
 }
+
+// func forgetPasswordReset(ctx iris.Context) {
+// 	var body forgetPasswordVerifyResetReq
+// 	err := ctx.ReadBody(&body)
+// 	if err != nil {
+// 		ctx.StatusCode(400)
+// 		ctx.JSON(iris.Map{
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
+
+// 	var user models.User
+// 	result := mysql.Ins().Where("email = ?", body.Email).First(&user)
+
+// 	if errors.Is(result.Error, gorm.ErrRecordNotFound) || !user.IsActive {
+// 		ctx.StatusCode(404)
+// 		ctx.JSON(iris.Map{
+// 			"error ": "Email doesn't exist",
+// 		})
+// 		return
+// 	} else if !user.IsVerified {
+// 		ctx.StatusCode(403)
+// 		ctx.JSON(iris.Map{
+// 			"error": "Email not verified",
+// 		})
+// 		return
+// 	}
+
+// 	var code models.UserResetPasswordOTP
+// 	result = mysql.Ins().Where("user_id = ?", user.ID).Where("code = ?", body.Code).Last(&code)
+
+// 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+// 		ctx.StatusCode(404)
+// 		ctx.JSON(iris.Map{
+// 			"message": "Code doesn't exist",
+// 		})
+// 		return
+// 	} else if code.ExpireAt.Before(time.Now()) {
+// 		ctx.StatusCode(404)
+// 		ctx.JSON(iris.Map{
+// 			"message": "Code expired",
+// 		})
+// 		return
+// 	}
+
+// 	ctx.JSON(iris.Map{
+// 		"message": "Password reset successfully",
+// 	})
+// }
